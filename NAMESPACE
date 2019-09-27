@@ -1,0 +1,3 @@
+useDynLib(ssJIVE, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
