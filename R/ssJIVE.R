@@ -1,5 +1,5 @@
 ssJIVE = function(data_list,r,rIndiv,SpSm=rep('N',length(data_list)),
-                  lambda='BIC',alpha='BIC',scale='y',
+                  lambda='BIC',alpha='BIC',scale='y', SpSm_indiv=SpSm,
                   ConvergeThresh=1e-6,MaxIter=1e3){
 # [J,A] = JIVE(data_list,r,rIndiv,scale,ConvergeThresh,MaxIter)
 # Input:
@@ -119,14 +119,14 @@ for(j in 1:MaxIter){
     rows = (tmp+1):sum(d[1:i]);
     U = data_list[[i]] - J[rows,];
     if( !(rIndiv[i]==0) ){
-      if( SpSm[i]=="Sm" | SpSm[i]=="SpSm" ){
+      if( SpSm_indiv[i]=="Sm" | SpSm_indiv[i]=="SpSm" ){
         res = sfpca_bic(U - U %*% V2 %*% t(V2), rIndiv[i], Omeg_all[rows,rows], 
                         sparsity_locs_all[rows], lambda, alpha)
         if( min(c(res[["optavs"]]))==min(alpha_all[[i]]) & j<mod_num & (!alp_fix) ){ alpha_all[[i]] = c(alpha_all[[i]][-1], min(alpha_all[[i]])/2); }
         if( max(c(res[["optavs"]]))==max(alpha_all[[i]]) & j<mod_num & (!alp_fix) ){ alpha_all[[i]] = c(max(alpha_all[[i]])*1.2, head(alpha_all[[i]], -1)); }
         if( min(c(res[["optlvs"]]))==min(lambda_all[[i]]) & j<mod_num & (!lam_fix) ){ lambda_all[[i]] = c(lambda_all[[i]][-1], min(lambda_all[[i]])/2); }
         if( max(c(res[["optlvs"]]))==max(lambda_all[[i]]) & j<mod_num & (!lam_fix) ){ lambda_all[[i]] = c(max(lambda_all[[i]])*1.2, head(lambda_all[[i]], -1)); }
-      } else if(SpSm[i]=="Sp"){
+      } else if(SpSm_indiv[i]=="Sp"){
         # https://cran.r-project.org/web/packages/ssvd/ssvd.pdf
         tmp = ssvd(t(U - U %*% V2 %*% t(V2)), method="theory", r=rIndiv[i])
         res = list(U=tmp$u, D=tmp$d, V=tmp$v)
